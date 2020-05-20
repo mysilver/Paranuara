@@ -3,9 +3,16 @@ import json
 from flask import Flask, make_response, jsonify, abort
 from flask_restplus import Resource, Api
 import pandas as pd
+from nltk.corpus import wordnet as wn
 
 app = Flask(__name__)
 api = Api(app)
+
+
+def load_entities(entity_type):
+    from nltk.corpus import wordnet as wn
+    food = wn.synset('{}.n.01'.format(entity_type))
+    return set([w.lower().replace("_", " ") for s in food.closure(lambda s: s.hyponyms()) for w in s.lemma_names()])
 
 
 def load_data():
@@ -20,6 +27,8 @@ def load_data():
 
 # Read and load data from the given sources
 companies, dataset = load_data()
+vegetables = load_entities("vegetable")
+fruits = load_entities("fruit")
 
 
 def error(code, message):
@@ -45,10 +54,23 @@ class Company(Resource):
         return jsonify([result[i] for i in result])
 
 
-@api.route('/people')
+@api.route('/people/<string:id>/favorite')
 class People(Resource):
-    def get(self):
-        return "Hello"
+    @api.response(404, 'Person not found')
+    def get(self, id):
+        result = dataset.query("_id=='{}'".format(id))[["name", "age", "favouriteFood"]]
+
+        if len(result) == 0:
+            return error(404, "Person not found")
+
+        result = json.loads(result.iloc[0].to_json())
+        ret = dict()
+        ret["username"] = result["name"]
+        ret["age"] = str(result["age"])
+        ret["fruits"] = [f for f in result["favouriteFood"] if f.lower() in fruits]
+        ret["vegetables"] = [f for f in result["favouriteFood"] if f.lower() in vegetables]
+
+        return jsonify(ret)
 
 
 if __name__ == '__main__':
