@@ -31,9 +31,11 @@ def error(code, message):
 @api.route('/companies/<string:company_name>/employees')
 @api.param('company_name', 'company name')
 class Company(Resource):
+    @api.response(400, 'Company name is incorrect')
+    @api.response(404, 'Employee not found')
     def get(self, company_name):
         if company_name not in companies:
-            return error(404, "Company not found")
+            return error(400, "Company name is incorrect'")
 
         result = dataset.query("company=='{}'".format(company_name))
         if len(result) == 0:
