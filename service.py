@@ -4,6 +4,9 @@ import pandas as pd
 from flask import Flask, jsonify
 from flask_restplus import Resource, Api
 from nltk.corpus import wordnet as wn
+import nltk
+nltk.download("wordnet")
+nltk.download("wordnet_ic")
 
 app = Flask(__name__)
 api = Api(app)
