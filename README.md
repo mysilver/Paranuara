@@ -13,6 +13,12 @@ python3 service.py
 ```html
 http://127.0.0.1:5000/
 ```
-
+- Since all operations have been implimented as GET Method, you can run test example by just opening the following linked in your browser:
+```html
+http://127.0.0.1:5000/companies/1/employees
+http://127.0.0.1:5000/people/4/common-friends/5
+http://127.0.0.1:5000/people/23/favorite
+```
 ## 
-Please be noted that this code will start downloading required corpus for Natural Language Tool Kit (NLTK). NLTK is being used for differentiating between vegetables and fruits. 
+Please be noted that this code will start downloading required corpus for Natural Language Tool Kit (NLTK). NLTK is being used for differentiating between vegetables and fruits.
+ 
